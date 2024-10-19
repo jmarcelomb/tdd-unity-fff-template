@@ -11,7 +11,7 @@ ARG LLVM_VERSION=18
 # Install essential dependencies and create the user in one go
 RUN DEBIAN_FRONTEND=noninteractive \
     apt-get update && apt-get install -y --no-install-recommends \
-    sudo zsh ca-certificates git build-essential gdb cmake curl cppcheck \
+    sudo ca-certificates git build-essential cmake curl cppcheck \
     lsb-release wget software-properties-common gnupg \
     && rm -rf /var/lib/apt/lists/* \
     && if ! id -u $USERNAME 2>/dev/null; then \
@@ -39,7 +39,7 @@ RUN for llvm_prog in $(ls /usr/bin | grep -E "llvm-.*-${LLVM_VERSION}$"); do \
     done; \
     for clang_prog in $(ls /usr/bin | grep -E "clang.*${LLVM_VERSION}$"); do \
     sudo ln -s "/usr/bin/$clang_prog" "/usr/bin/${clang_prog%-${LLVM_VERSION}}"; \
-    done \
+    done; \
     for lldb_prog in $(ls /usr/bin | grep -E "lldb.*${LLVM_VERSION}$"); do \
     sudo ln -s "/usr/bin/$lldb_prog" "/usr/bin/${lldb_prog%-${LLVM_VERSION}}" || true; \
     done;
