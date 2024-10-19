@@ -1,0 +1,16 @@
+{
+	"name": "tdd-unity-fff-template",
+	"build": {
+		"context": "..",
+		"dockerfile": "Dockerfile.dev"
+	},
+	"customizations": {
+		"vscode": {
+			"files.trimTrailingWhitespace": true,
+			"extensions": [
+				"ms-vscode.cmake-tools",
+				"llvm-vs-code-extensions.vscode-clangd"
+			]
+		}
+	}
+}

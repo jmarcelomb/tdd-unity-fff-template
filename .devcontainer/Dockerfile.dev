@@ -1,0 +1,42 @@
+# Set build argument and base image
+ARG BUILD_FROM=ubuntu:22.04
+FROM ${BUILD_FROM} AS base
+
+# Define default user variables
+ARG USERNAME=vscode
+ARG UID=1000
+ARG GID=1000
+ARG LLVM_VERSION=18
+
+# Install essential dependencies and create the user in one go
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt-get update && apt-get install -y --no-install-recommends \
+    sudo zsh ca-certificates git build-essential gdb cmake curl cppcheck \
+    lsb-release wget software-properties-common gnupg \
+    && rm -rf /var/lib/apt/lists/* \
+    && if ! id -u $USERNAME 2>/dev/null; then \
+        groupadd -g $GID $USERNAME \
+        && useradd -ms /bin/bash $USERNAME -u $UID -g $GID; \
+    fi \
+    && mkdir -p /etc/sudoers.d \
+    && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME \
+    && chmod 440 /etc/sudoers.d/$USERNAME \
+    && chown -R $USERNAME:$USERNAME /home/$USERNAME
+
+# Switch to the created user
+USER $USERNAME
+WORKDIR /home/$USERNAME
+
+# Install LLVM dependencies
+RUN wget https://apt.llvm.org/llvm.sh \
+    && chmod +x llvm.sh \
+    && sudo ./llvm.sh $LLVM_VERSION all \
+    && rm ./llvm.sh
+
+# Symlink LLVM and Clang binaries
+RUN for llvm_prog in $(ls /usr/bin | grep -E "llvm-.*-${LLVM_VERSION}$"); do \
+    sudo ln -s "/usr/bin/$llvm_prog" "/usr/bin/${llvm_prog%-${LLVM_VERSION}}"; \
+    done; \
+    for clang_prog in $(ls /usr/bin | grep -E "clang.*${LLVM_VERSION}$"); do \
+    sudo ln -s "/usr/bin/$clang_prog" "/usr/bin/${clang_prog%-${LLVM_VERSION}}"; \
+    done
