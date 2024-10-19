@@ -1,0 +1,3 @@
+{
+    "unityExplorer.testSourceFileRegex": "test_(?my_module)\\w+\\.c"
+}

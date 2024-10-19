@@ -40,3 +40,6 @@ RUN for llvm_prog in $(ls /usr/bin | grep -E "llvm-.*-${LLVM_VERSION}$"); do \
     for clang_prog in $(ls /usr/bin | grep -E "clang.*${LLVM_VERSION}$"); do \
     sudo ln -s "/usr/bin/$clang_prog" "/usr/bin/${clang_prog%-${LLVM_VERSION}}"; \
     done
+    for lldb_prog in $(ls /usr/bin | grep -E "lldb.*${LLVM_VERSION}$"); do \
+    sudo ln -s "/usr/bin/$lldb_prog" "/usr/bin/${lldb_prog%-${LLVM_VERSION}}" || true; \
+    done;
